@@ -1,0 +1,31 @@
+    def add_comment(self, permalink, name, email, body):
+
+        comment = {'author': name, 'body': body}
+
+        if email != "":
+            comment['email'] = email
+
+        try:
+            """ XXX HW 3.3 Work here to add the comment to the designated post. 
+            When done, modify the line below to return the number of documents updated 
+            by your modification, rather than just -1.
+            """
+            query = {'permalink': permalink}
+            # Finding which post to update the comments in
+            post = self.posts.find_one(query)
+            # Finding already existing comments
+            comment_list = post['comments']
+            # Adding the new comment
+            comment_list.append(comment)
+
+            update = {'$set': {'comments': comment_list}}
+            self.posts.update_one(query, update, upsert = True)
+
+            post = self.posts.find_one(query)
+
+            return post  # Change this to return the number of documents updated by the code for HW 3.3
+
+        except:
+            print "Could not update the collection, error"
+            print "Unexpected error:", sys.exc_info()[0]
+            return 0
